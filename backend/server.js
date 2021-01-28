@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
 const User = require('./models/User');
 // const cors = require('cors');
 // const bcrypt = require('bcryptjs'); // Consider using this one later, if it might help: https://www.npmjs.com/package/bcryptjs
@@ -40,7 +41,7 @@ app.post('/user/login', (req, res, next) => {
 
 
 
-// HERE: Salting & Hashing functions -- note that there are implementations that do it async, so research the strengths of that approach
+// Salting & Hashing functions -- note that there are implementations that do it async, so research the strengths of that approach
 function createSalt() {
     return crypto.randomBytes(20).toString('hex');
 }
@@ -60,8 +61,11 @@ function hash(password, salt) {
     }
 }
 
-// HERE: Token generating function
+// Token generating function
+function craftAccessToken(email, id) {
+    return jwt.sign({ email: email, userId: id }, process.env.SECRET, { expiresIn: '4h' });
+}
 
+const rando = crypto.randomBytes(64).toString('hex');
 
-
-app.listen(PORT, () => console.log(`Project : Playground Alpha is listening on Port ${PORT}.`));
+app.listen(PORT, () => console.log(`Project : Playground Alpha is listening on Port ${PORT}, and psst, ${rando}.`));

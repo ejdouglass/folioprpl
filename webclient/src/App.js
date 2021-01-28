@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Route, useHistory } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import axios from 'axios';
 import './App.css';
 import { Store, Context } from './context/context';
 
