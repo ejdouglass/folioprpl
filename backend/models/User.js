@@ -21,9 +21,18 @@ const UserSchema = new Schema({
         required: true
     },
     history: String,
+    birthday: Date,
     lab: String,
     encounters: Object,
-    library: Object
+    library: Object,
+    joined: Date
 });
+
+/*
+    DATA MODELING++
+
+    Some other variables to consider adding to this all
+    -- privacy
+*/
 
 module.exports = mongoose.model('User', UserSchema);

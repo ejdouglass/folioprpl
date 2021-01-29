@@ -12,7 +12,8 @@ const app = express();
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers, Authorization, Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
 
@@ -32,11 +33,50 @@ mongoose.connect(process.env.DB_HOST, connectionParams)
 const PORT = process.env.PORT || 8000;
 
 app.post('/user/register', (req, res, next) => {
+    // Remember, never trust the client! Vet the req.body contents again here.
+    const newUserCredentials = req.body;
 
+    // HERE: Vet req.body contents, juuuust in case 
+
+    newUserCredentials.salt = createSalt();
+    newUserCredentials.hash = hash(newUserCredentials.password, newUserCredentials.salt);
+
+    User.findOne({ email: newUserCredentials.email })
+        .then(searchResult => {
+            if (searchResult === null) {
+                // Make new user in DB
+                const newUser = new User({
+                    email: newUserCredentials.email,
+                    hash: newUserCredentials.hash,
+                    salt: newUserCredentials.salt,
+                    playgroundname: newUserCredentials.playgroundname
+                });
+                // Might add in some additional defaults later, like default level privacy and such
+
+                newUser.save()
+                    .then(res.json({
+                        message: `${newUser.playgroundname} has been registered!`,
+                        token: craftAccessToken(newUser.email, newUser._id)
+                    }))
+                    .catch(err => {
+                        console.log(`${err} occurred while trying to save new user.`);
+                        res.json({message: `Welp, we hit a snag registering this user: ${err}.`});
+                    });
+            } else {
+                // Already got this email address registered. Nevermind!
+                res.json({message: `Whoops! That user already exists. Try again.`});
+            }
+        })
+    
+    // res.json({message: `Bork bork, ${newUserCredentials.pgName}`, status: 200});
 });
 
 app.post('/user/login', (req, res, next) => {
 
+});
+
+app.get('/auth_check', authenticateToken, (req, res, next) => {
+    res.json({message: `I am the endpoint and have received ${JSON.stringify(req.userData)}`});
 });
 
 
@@ -66,6 +106,17 @@ function craftAccessToken(email, id) {
     return jwt.sign({ email: email, userId: id }, process.env.SECRET, { expiresIn: '4h' });
 }
 
-const rando = crypto.randomBytes(64).toString('hex');
+// Token checking function
+function authenticateToken(req, res, next) {
+    // Expecting a TOKEN for this route. Check it and proceed!
+    const token = req.headers.authorization.split(' ')[1];
+    console.log(`I found this token during auth: ${token}.`);
+    const decodedToken = jwt.verify(token, process.env.SECRET);
+    console.log(`This token, decoded: ${JSON.stringify(decodedToken)}`);
 
-app.listen(PORT, () => console.log(`Project : Playground Alpha is listening on Port ${PORT}, and psst, ${rando}.`));
+    req.userData = {email: decodedToken.email, userId: decodedToken.userId};
+
+    next();
+}
+
+app.listen(PORT, () => console.log(`Project : Playground Alpha is listening on Port ${PORT}.`));

@@ -16,7 +16,7 @@ axios.defaults.baseURL = 'http://localhost:8000';
 //   token = userData.token
 // }
 // axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-// axios.defaults.headers.post['Content-Type'] = 'application/json';
+axios.defaults.headers.post['Content-Type'] = 'application/json';
 // axios.interceptors.request.use(request => {
 //   return request;
 // }, 

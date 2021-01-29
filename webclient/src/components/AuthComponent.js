@@ -23,6 +23,14 @@ const Input = styled.input`
     font-size: 0.8rem;
 `;
 
+const HalfInput = styled.input`
+    padding: 1rem;
+    border: 1px solid #888;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+    width: 47%;
+`;
+
 const Button = styled.button`
     background: linear-gradient(to bottom, #0AF, #07D);
     border-color: #148;
@@ -47,4 +55,4 @@ const Error = styled.div`
     background-color: red;
 `;
 
-export { Card, Form, Input, Button, LogoBlock, Error };
+export { Card, Form, Input, HalfInput, Button, LogoBlock, Error };

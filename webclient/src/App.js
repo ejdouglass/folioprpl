@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, useHistory } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import axios from 'axios';
 import './App.css';
 import { Store, Context } from './context/context';
 
@@ -48,9 +49,16 @@ const Header = () => {
 const LandingPage = () => {
   const [state, dispatch] = useContext(Context);
 
+  function checkBackendAuth() {
+    axios.get('/auth_check')
+      .then(res => console.log(`I checked the backend. I got this message: ${res.data.message}`))
+      .catch(err => console.log(`Checking backend auth failed, error: ${err}`));
+  }
+
   return (
     <div>
       <h1>Hey there, {state.name}.</h1>
+      <button onClick={checkBackendAuth}>BOOP ME TO CHECK BACKEND AUTH</button>
     </div>
   )
 }
