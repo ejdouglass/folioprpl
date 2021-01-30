@@ -20,7 +20,7 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
-    history: String,
+    history: Object,
     birthday: Date,
     lab: String,
     encounters: Object,

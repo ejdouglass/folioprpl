@@ -49,13 +49,15 @@ app.post('/user/register', (req, res, next) => {
                     email: newUserCredentials.email,
                     hash: newUserCredentials.hash,
                     salt: newUserCredentials.salt,
-                    playgroundname: newUserCredentials.playgroundname
+                    playgroundname: newUserCredentials.playgroundname,
+                    joined: new Date()
                 });
                 // Might add in some additional defaults later, like default level privacy and such
 
                 newUser.save()
                     .then(res.json({
                         message: `${newUser.playgroundname} has been registered!`,
+                        user: newUser, // Our current whoopsie is that, well, we're including the salt AND hash here, which we shouldn't :P
                         token: craftAccessToken(newUser.email, newUser._id)
                     }))
                     .catch(err => {
@@ -72,7 +74,42 @@ app.post('/user/register', (req, res, next) => {
 });
 
 app.post('/user/login', (req, res, next) => {
+    // Expecting .email and .password
+    const loginCredentials = req.body;
 
+    User.findOne({ email: loginCredentials.email })
+        .then(searchResult => {
+            if (searchResult === null) {
+                // No email like that found, no such user
+                console.log(`Incorrect user.`);
+                res.json({message: `Email and password do not match.`});
+            } else {
+                let salt = searchResult.salt;
+                if (hash(loginCredentials.password, salt) === searchResult.hash) {
+                    console.log(`Password matches!`);
+                    // Do yay-success stuff here
+                    let loggedInUser = {
+                        playgroundname: searchResult.playgroundname,
+                        birthday: searchResult.birthday,
+                        history: searchResult.history,
+                        lab: searchResult.lab,
+                        encounters: searchResult.encounters,
+                        library: searchResult.library,
+                        token: craftAccessToken(searchResult.email, searchResult._id)
+                    };
+                    res.json({message: `Login successful!`, user: loggedInUser});
+                } else {
+                    console.log(`Incorrect password.`);
+                    res.json({message: `Email and password do not match.`});
+                }
+            }
+        })
+        .catch(err => {
+            console.log(`User login error occurred: ${err}.`);
+            res.json({message: `Error occurred logging you in: ${err}.`});
+        })
+
+    
 });
 
 app.get('/auth_check', authenticateToken, (req, res, next) => {

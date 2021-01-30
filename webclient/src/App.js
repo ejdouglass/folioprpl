@@ -57,7 +57,7 @@ const LandingPage = () => {
 
   return (
     <div>
-      <h1>Hey there, {state.name}.</h1>
+      <h1>Hey there, {state.playgroundname}.</h1>
       <button onClick={checkBackendAuth}>BOOP ME TO CHECK BACKEND AUTH</button>
     </div>
   )

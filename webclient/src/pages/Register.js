@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from 'axios';
 import { Link, useHistory } from 'react-router-dom';
+import { actions, Context } from '../context/context';
 import { Card, LogoBlock, Form, Input, HalfInput, Button } from '../components/AuthComponent';
 
 function Register() {
+  const [state, dispatch] = useContext(Context);
   const [email, setEmail] = useState('');
   const [pgName, setPgName] = useState('');
   const [password, setPassword] = useState('');
@@ -37,7 +39,9 @@ function Register() {
       axios.post('/user/register', newUserCredentials)
         .then(res => {
           console.log(`Server sez: ${res.data.message} and presents you with this token: ${res.data.token}!`);
-          // HERE: Update global state ... which requires an update to Reducer, obviously
+          let localUser = {...res.data.user, token: res.data.token};
+          console.log(`Registering went well, and our local user is now ${JSON.stringify(localUser)}`);
+          dispatch({type: actions.LOAD_USER, payload: localUser});
           axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
           history.push('/');
         })
