@@ -39,13 +39,13 @@ function Register() {
       // Oh, and boop onto the HOME page. You're home! See your STUFF!
       axios.post('/user/register', newUserCredentials)
         .then(res => {
-          console.log(`Server sez: ${res.data.message} and presents you with this token: ${res.data.token}!`);
-          let localUser = {...res.data.user, token: res.data.token};
+          console.log(`Server sez: ${res.data.message}!`);
+          let localUser = {...res.data.user};
           console.log(`Registering went well, and our local user is now ${JSON.stringify(localUser)}`);
           dispatch({type: actions.LOAD_USER, payload: localUser});
           save(localUser);
-          axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
-          history.push('/');
+          axios.defaults.headers.common['Authorization'] = `Bearer ${localUser.token}`;
+          history.push('/home');
         })
         .catch(err => console.log(`Oopsie: ${err}`));
       }

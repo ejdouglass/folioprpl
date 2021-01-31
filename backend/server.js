@@ -55,11 +55,24 @@ app.post('/user/register', (req, res, next) => {
                 // Might add in some additional defaults later, like default level privacy and such
 
                 newUser.save()
-                    .then(res.json({
+                    .then(yay => {
+                        let newToken = craftAccessToken(newUser.email, newUser._id);
+                        let frontEndUser = {
+                            email: newUser.email,
+                            playgroundname: newUser.playgroundname,
+                            joined: newUser.joined,
+                            history: {},
+                            lab: '',
+                            encounters: {},
+                            library: {},
+                            isAuthenticated: true,
+                            token: newToken
+                        };
+                        res.json({
                         message: `${newUser.playgroundname} has been registered!`,
-                        user: newUser, // Our current whoopsie is that, well, we're including the salt AND hash here, which we shouldn't :P
-                        token: craftAccessToken(newUser.email, newUser._id)
-                    }))
+                        user: frontEndUser, // Our current whoopsie is that, well, we're including the salt AND hash here, which we shouldn't :P
+                        token: newToken
+                    })})
                     .catch(err => {
                         console.log(`${err} occurred while trying to save new user.`);
                         res.json({message: `Welp, we hit a snag registering this user: ${err}.`});
