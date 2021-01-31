@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import axios from 'axios';
 import { Link, useHistory } from 'react-router-dom';
 import { actions, Context } from '../context/context';
+import { save } from '../functions/globalfxns';
 import { Card, LogoBlock, Form, Input, HalfInput, Button } from '../components/AuthComponent';
 
 function Register() {
@@ -42,6 +43,7 @@ function Register() {
           let localUser = {...res.data.user, token: res.data.token};
           console.log(`Registering went well, and our local user is now ${JSON.stringify(localUser)}`);
           dispatch({type: actions.LOAD_USER, payload: localUser});
+          save(localUser);
           axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
           history.push('/');
         })

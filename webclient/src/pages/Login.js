@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { Link, useHistory } from 'react-router-dom';
 import { actions, Context } from '../context/context';
 import axios from 'axios';
+import { save } from '../functions/globalfxns';
 import { Card, LogoBlock, Form, Input, Button } from '../components/AuthComponent';
 
 function Login() {
@@ -14,10 +15,16 @@ function Login() {
     let loginCredentials = {email: email, password: password};
     axios.post('/user/login', loginCredentials)
       .then(res => {
-        console.log(`Login successful, we have logged in ${JSON.stringify(res.data.user)}`)
-        dispatch({type: actions.LOAD_USER, payload: res.data.user});
-        axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.user.token}`;
-        history.push('/');
+        // ADD: An extra check, because right now ANY response is considered 'success' here :P
+        if (res.data.success) {
+          console.log(`Login successful, we have logged in ${JSON.stringify(res.data.user)}`)
+          dispatch({type: actions.LOAD_USER, payload: res.data.user});
+          save(res.data.user);
+          axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.user.token}`;
+          history.push('/');
+        } else {
+          alert(`Whoops. ${res.data.message}`);
+        }
       })
       .catch(err => console.log(`Error logging in: ${err}`));
   }

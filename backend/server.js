@@ -95,12 +95,13 @@ app.post('/user/login', (req, res, next) => {
                         lab: searchResult.lab,
                         encounters: searchResult.encounters,
                         library: searchResult.library,
-                        token: craftAccessToken(searchResult.email, searchResult._id)
+                        token: craftAccessToken(searchResult.email, searchResult._id),
+                        isAuthenticated: true
                     };
-                    res.json({message: `Login successful!`, user: loggedInUser});
+                    res.json({message: `Login successful!`, user: loggedInUser, success: true});
                 } else {
                     console.log(`Incorrect password.`);
-                    res.json({message: `Email and password do not match.`});
+                    res.json({message: `Email and password do not match.`, success: false});
                 }
             }
         })
