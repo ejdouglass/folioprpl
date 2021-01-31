@@ -21,7 +21,8 @@ function Login() {
           dispatch({type: actions.LOAD_USER, payload: res.data.user});
           save(res.data.user);
           axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.user.token}`;
-          history.push('/');
+          console.log(`Full user deets logged in: ${JSON.stringify(res.data.user)}`)
+          history.push('/home');
         } else {
           alert(`Whoops. ${res.data.message}`);
         }
@@ -33,7 +34,7 @@ function Login() {
     <Card>
       <LogoBlock />
       <Form>
-        <Input type="email" placeholder="Please enter your email" value={email} onChange={e => setEmail(e.target.value)} />
+        <Input type="email" autoFocus={true} placeholder="Please enter your email" value={email} onChange={e => setEmail(e.target.value)} />
         <Input type="password" placeholder="Your password, please" value={password} onChange={e => setPassword(e.target.value)} />
         <Button onClick={loginUser}>Log In</Button>
       </Form>

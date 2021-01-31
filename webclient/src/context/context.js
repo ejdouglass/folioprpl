@@ -2,7 +2,8 @@ import React, { createContext, useReducer } from 'react';
 
 export const actions = {
     LOAD_USER: 'load_user',
-    LOGOUT: 'logout'
+    LOGOUT: 'logout',
+    ADD_ACTIVITY: 'add_activity'
 }
 
 const Reducer = (state, action) => {
@@ -12,6 +13,18 @@ const Reducer = (state, action) => {
             return action.payload;
         case actions.LOGOUT:
             return initialState;
+        case actions.ADD_ACTIVITY:
+            // Receiving an object payload: {activity: {}, date: 'mmddyyyy'}
+            let historyCopy = JSON.parse(JSON.stringify(state.history));
+            if (!historyCopy[action.payload.date]) {
+                console.log(`This date has nothing in it yet! Lemme fix that real quick...`);
+                historyCopy[action.payload.date] = {
+                    planned: [],
+                    completed: []
+                }
+            }
+            historyCopy[action.payload.date].completed.push(action.payload.activity);
+            return {...state, history: historyCopy};
         default:
             console.log(`Dispatch called the Reducer, but for whatever reason, we're executing the default. Returning state.`);
             return state;

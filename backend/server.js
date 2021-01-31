@@ -91,10 +91,10 @@ app.post('/user/login', (req, res, next) => {
                     let loggedInUser = {
                         playgroundname: searchResult.playgroundname,
                         birthday: searchResult.birthday,
-                        history: searchResult.history,
-                        lab: searchResult.lab,
-                        encounters: searchResult.encounters,
-                        library: searchResult.library,
+                        history: searchResult.history || {},
+                        lab: searchResult.lab || '',
+                        encounters: searchResult.encounters || {},
+                        library: searchResult.library || {},
                         token: craftAccessToken(searchResult.email, searchResult._id),
                         isAuthenticated: true
                     };
@@ -111,6 +111,25 @@ app.post('/user/login', (req, res, next) => {
         })
 
     
+});
+
+app.post('/user/update', authenticateToken, (req, res, next) => {
+    // req.userData SHOULD be an object containing email and userId
+    // req.body should still have the updated STATE object on there? Ideally, if state matches the model, we can just nudge it on it there
+    
+    const filter = { email: req.userData.email };
+    const update = { $set: req.body };
+    const options = { new: true, useFindAndModify: false }
+
+    User.findOneAndUpdate(filter, update, options)
+        .then(searchResult => {
+            console.log(`Updated user data: ${searchResult}`);
+            res.json({message: `User info has been updated.`, success: true});
+        })
+        .catch(err => {
+            console.log(`Error updating user info: ${err}`);
+            res.json({message: `Error updating user info on backend: ${err}`, success: false});
+        })
 });
 
 app.get('/auth_check', authenticateToken, (req, res, next) => {

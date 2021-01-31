@@ -56,7 +56,7 @@ function Register() {
     <Card>
       <LogoBlock />
       <Form>
-        <Input type="email" placeholder="Please enter your email" value={email} onChange={e => setEmail(e.target.value)} />
+        <Input type="email" autoFocus={true} placeholder="Please enter your email" value={email} onChange={e => setEmail(e.target.value)} />
         <div className='flex flex-row' style={{justifyContent: 'space-between'}}>
           <HalfInput type="password" placeholder="Enter a password" value={password} onChange={e => setPassword(e.target.value)} />
           <HalfInput type="password" placeholder="Confirm password" value={confirmedPassword} onChange={e => setConfirmedPassword(e.target.value)} />
