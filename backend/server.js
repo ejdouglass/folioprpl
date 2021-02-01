@@ -54,6 +54,7 @@ app.post('/user/register', (req, res, next) => {
                 });
                 // Might add in some additional defaults later, like default level privacy and such
 
+                // Ooh. Maybe we can set defaults here, too.
                 newUser.save()
                     .then(yay => {
                         let newToken = craftAccessToken(newUser.email, newUser._id);
@@ -63,7 +64,7 @@ app.post('/user/register', (req, res, next) => {
                             joined: newUser.joined,
                             history: {},
                             lab: '',
-                            encounters: {},
+                            encounters: { tabula_rasa: 0 },
                             library: {},
                             isAuthenticated: true,
                             token: newToken

@@ -38,17 +38,39 @@ Let's figure out what kind of state-y things we want to track globally
 
       Thoughts on Stuff to ADD or EXPAND:
     -- whatDo, which keeps state-centric tabs on where the user is on the site and what they're engaged with (in case crash or leaving or whatnot)
+
+      FRIENDS, FOLLOWING, MESSAGES, MILESTONES, TUT
+    -- messages: { [ messages ] , lastReadTime }
+    -- following: [ _id ]
+    -- friends: [ _id ]
+    -- milestones: { name, requirements, description, icon, reward, dateCompleted }
+    -- groups: [ group_id ]
+    -- programs: [ { name, description, startDate, endDate, whenDo } ]
+    -- treasures: []
+    -- whatDo: { where: '/', what: {} }
+    -- cutscene: { pending: [], current: {} }
+     \_ current: { trigger: '/home', content: [], atContentIndex: 0, userInputs: {} } 
+                                                                     --> userInputs can store answers to questions and prompts, with descriptive keys
+
+    [ Notes on History ]
+    -- aside from a key for every day, maybe another category?... nah, actually, just going backwards through each day's array is probably fine for
+        "see person's activity" stuff
+
+    Also... what should be in state here, and what should be backend-only? 
 */
 const initialState = {
     playgroundname: 'Esteemed Guest',
     token: undefined,
-    history: {},
+    history: {}, // { 'mmddyy' : { planned: [], completed: [] } }
     birthday: undefined,
     lab: {},
     encounters: {},
     library: {},
     joined: undefined,
-    isAuthenticated: false
+    isAuthenticated: false,
+    isAdmin: false,
+    whatDo: { where: '/', what: {} },
+    cutscene: { pending: [], current: {} }
 }
 
 export const Context = createContext(initialState);

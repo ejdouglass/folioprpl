@@ -20,19 +20,38 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
-    history: Object,
+    history: {
+        type: Object,
+        default: {}
+    },
     birthday: Date,
     lab: String,
-    encounters: Object,
+    encounters: {
+        type: Object,
+        default: { tabula_rasa: 0 }
+    },
     library: Object,
-    joined: Date
+    joined: Date,
+    following: Array,
+    friends: Array,
+    groups: Array,
+    milestones: Object,
+    messages: Object,
+    programs: Array,
+    treasures: Array,
+    whatDo: Object,
+    privacy: {
+        type: Number,
+        default: 0
+    }
 });
 
 /*
     DATA MODELING++
 
-    Some other variables to consider adding to this all
-    -- privacy
+    Defining Privacy Levels
+    0 : Searchable, full information
+    
 */
 
 module.exports = mongoose.model('User', UserSchema);

@@ -8,6 +8,7 @@ import './App.css';
 import { save, load, dateToString, updateDB } from './functions/globalfxns';
 import { Store, Context, actions } from './context/context';
 import { Button } from './components/AuthComponent'
+import { events } from './events/events';
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
             <PrivateRoute exact path='/user' component={UserPage} />
             <PrivateRoute exact path='/home' component={Home} />
             <PrivateRoute exact path='/body' component={Body} />
+            <PrivateRoute exact path='/people' component={People} />
           </div>
         </div>
       </Router>
@@ -149,10 +151,13 @@ const Home = () => {
   }, []);
 
   return (
-    <div>
+    <div style={{display: 'flex', flexDirection: 'column', width: '100%', marginTop: '1rem', alignItems: 'center', padding: '1rem'}}>
       <h1>Welcome home, {state.playgroundname}!</h1>
       <h2>We may now do things. Well, not yet. Soon, though!</h2>
-      <h3>The idea for this page is to present an interactive "core" of the PrPl experience. This is also where the firs tutorial will 'load.'</h3>
+      <h3 style={{textAlign: 'center'}}>The idea for this page is to present an interactive "core" of the PrPl experience. This is also where the first tutorial will 'load.'</h3>
+      {state.encounters?.tabula_rasa === 0 && 
+      <h1>What a TREAT! Your adventure is beginning right now!</h1>
+      }
     </div>
   )
 }
@@ -199,6 +204,15 @@ const Body = () => {
         </div>
         <Button onClick={addActivity} style={{marginTop: '1rem'}}>Add Activity</Button>
       </div>
+    </div>
+  )
+}
+
+
+const People = () => {
+  return (
+    <div>
+      <h1>Find People Here!</h1>
     </div>
   )
 }
