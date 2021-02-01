@@ -145,6 +145,41 @@ app.post('/user/update', authenticateToken, (req, res, next) => {
         })
 });
 
+app.post('/user/change_pw', authenticateToken, (req, res, next) => {
+    // User is sending their old PW and new PW, so confirm old PW is good with hash-y, then set new PW's hash as their proper hash
+    // const PWRequest = {oldPW: oldPassword, newPW: newPassword};
+    const oldPW = req.body.oldPW;
+    const newPW = req.body.newPW;
+
+    User.findOne({ email: req.userData.email })
+        .then(searchResult => {
+            if (searchResult === null) {
+                // This shouldn't happen since the user's email is being passed by token, but here we are anyway
+            } else {
+                let salt = searchResult.salt;
+                if (hash(oldPW, salt) === searchResult.hash) {
+                    // Ok, old password checks out. Let's save the new PW!
+                    console.log(`Attempting to update to new password ${newPW}`);
+                    User.findOneAndUpdate({ email : req.userData.email }, { $set: { hash: hash(newPW, salt) } }, { new: true, useFindAndModify: false })
+                        .then(searchResult => {
+                            console.log(`The user ${searchResult.email} successfully updated their password.`);
+                            res.json({message: `Your password has successfully been updated.`, success: true});
+                        })
+                        .catch(err => {
+                            console.log(`An error occurred saving ${searchResult.email}'s new PW: ${err}`);
+                            res.json({message: `An error occurred saving your new PW: ${err}`, success: false})
+                        });
+                }
+            }
+
+        })
+        .catch(err => {
+            console.log(`Error finding user to update PW: ${err}`);
+            res.json({message: `Error updating your new PW: ${err}`, success: false});
+        })
+
+});
+
 app.get('/auth_check', authenticateToken, (req, res, next) => {
     res.json({message: `I am the endpoint and have received ${JSON.stringify(req.userData)}`});
 });
