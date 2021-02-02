@@ -40,6 +40,10 @@ const UserSchema = new Schema({
     programs: Array,
     treasures: Array,
     whatDo: Object,
+    cutscene: {
+        type: Object,
+        default: { pending: [], current: {} }
+    },
     privacy: {
         type: Number,
         default: 0
@@ -51,6 +55,8 @@ const UserSchema = new Schema({
 
     Defining Privacy Levels
     0 : Searchable, full information
+
+    ... also, it probably makes sense to INITIALIZE all this stuff so newly registered users aren't "problematic" for the client code
     
 */
 

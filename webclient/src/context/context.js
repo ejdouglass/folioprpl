@@ -3,7 +3,9 @@ import React, { createContext, useReducer } from 'react';
 export const actions = {
     LOAD_USER: 'load_user',
     LOGOUT: 'logout',
-    ADD_ACTIVITY: 'add_activity'
+    ADD_ACTIVITY: 'add_activity',
+    MOUNT_CUTSCENE: 'mount_cutscene',
+    UNMOUNT_CUTSCENE: 'unmount_cutscene'
 }
 
 const Reducer = (state, action) => {
@@ -25,6 +27,22 @@ const Reducer = (state, action) => {
             }
             historyCopy[action.payload.date].completed.push(action.payload.activity);
             return {...state, history: historyCopy};
+        case actions.MOUNT_CUTSCENE:
+            // Setting this up to receive an EVENTS event to update state with. Here's our first:
+            /*
+                introduction: {
+                    content: [
+                        {type: 'say', content: 'Welcome! Your adventure is about to begin!'},
+                        {type: 'ask', content: 'Are you ready?', prompt: ['Yes', 'No']}
+                    ]
+                }
+            */
+            // Note that we're being passed events.introduction, so we're getting the contained OBJ
+            return {...state, cutscene: {...state.cutscene, current: action.payload}};
+        case actions.UNMOUNT_CUTSCENE:
+            // Makes sense to have the cutscene in question with its current progress if applicable, as well as if we "finished" or moving into pending
+            // Consider 
+            return state;
         default:
             console.log(`Dispatch called the Reducer, but for whatever reason, we're executing the default. Returning state.`);
             return state;

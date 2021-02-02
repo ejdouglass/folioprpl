@@ -15,6 +15,7 @@ const App = () => {
     <Store>
       <Router>
         <div id='app-container'>
+          <Cutscene />
           <Header />
           <div id='app-body'>
             <Route exact path='/' component={LandingPage} />
@@ -28,6 +29,24 @@ const App = () => {
         </div>
       </Router>
     </Store>
+  )
+}
+
+
+const Cutscene = () => {
+  const [state, dispatch] = useContext(Context);
+
+  // Probably add keyboard listeners to the window ONLY when cutscene is active? Can add keyboard interactivity that way, not just mouse.
+
+  // Could consider refactoring this to have conditional rendering in the RETURN statement that checks for state?.cutscene?.current instead
+
+  // HERE: Probably a handy useEffect that goes through and loads all the necessary details from the current cutscene event
+
+  return (
+    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', position: 'fixed', zIndex: '99', visibility: state?.cutscene?.current ? 'visible' : 'hidden', width: '100vw', height: '100vh', opacity: '0.9', backgroundColor: 'white'}}>
+      <h1>I am a CUTSCENE!</h1>
+      <button style={{padding: '1rem', marginTop: '1rem'}}>Cool, Go Away</button>
+    </div>
   )
 }
 
@@ -53,6 +72,13 @@ const Header = () => {
     }
     // NOTE: It may make a lot more sense just to pop this code into the index.js file instead. The framework for this method is commented out over there.
   }, [dispatch, history]);
+
+  useEffect(() => {
+    if (state?.cutscene?.current) {
+      // A current cutscene has been mounted; play it out somehow
+      // OR! What if we have a 'hidden' component, high z-index and fixed positioned
+    }
+  }, [state.cutscene])
 
   return (
     <div className='flex-centered flex-col' id='app-header'>
@@ -156,7 +182,10 @@ const Home = () => {
       <h2>We may now do things. Well, not yet. Soon, though!</h2>
       <h3 style={{textAlign: 'center'}}>The idea for this page is to present an interactive "core" of the PrPl experience. This is also where the first tutorial will 'load.'</h3>
       {state.encounters?.tabula_rasa === 0 && 
-      <h1>What a TREAT! Your adventure is beginning right now!</h1>
+      <>
+        <h1>What a TREAT! Your adventure is beginning right now!</h1>
+        <button style={{padding: '0.8rem'}} onClick={() => dispatch({type: actions.MOUNT_CUTSCENE, payload: events.introduction})}>BEGIN</button>
+      </>
       }
     </div>
   )

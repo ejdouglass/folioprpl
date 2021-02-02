@@ -15,6 +15,10 @@ export function updateDB(newStuff) {
             .catch(err => console.log(`Problem updating to backend: ${err}`));
 }
 
+export function mountEvent(event) {
+    // May or may not use this bad boy.
+}
+
 export function dateToString(date) {
     // Purpose of this function is to return today's date in the format MMDDYYYY as a string, with consistent indexing (i.e. January isn't 0)
     let dateToUse, MM, DD, YYYY;
