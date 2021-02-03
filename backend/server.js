@@ -58,20 +58,14 @@ app.post('/user/register', (req, res, next) => {
                 newUser.save()
                     .then(yay => {
                         let newToken = craftAccessToken(newUser.email, newUser._id);
-                        let frontEndUser = {
-                            email: newUser.email,
-                            playgroundname: newUser.playgroundname,
-                            joined: newUser.joined,
-                            history: {},
-                            lab: '',
-                            encounters: { tabula_rasa: 0 },
-                            library: {},
-                            isAuthenticated: true,
-                            token: newToken
-                        };
+                        let frontEndUser = JSON.parse(JSON.stringify(yay));
+                        delete frontEndUser.salt;
+                        delete frontEndUser.hash;
+                        frontEndUser.token = newToken;
+                        frontEndUser.isAuthenticated = true;
                         res.json({
-                        message: `${newUser.playgroundname} has been registered!`,
-                        user: frontEndUser, // Our current whoopsie is that, well, we're including the salt AND hash here, which we shouldn't :P
+                        message: `${frontEndUser.playgroundname} has been registered!`,
+                        user: frontEndUser, 
                         token: newToken
                     })})
                     .catch(err => {
@@ -101,18 +95,11 @@ app.post('/user/login', (req, res, next) => {
                 let salt = searchResult.salt;
                 if (hash(loginCredentials.password, salt) === searchResult.hash) {
                     console.log(`Password matches!`);
-                    // Do yay-success stuff here
-                    let loggedInUser = {
-                        playgroundname: searchResult.playgroundname,
-                        birthday: searchResult.birthday,
-                        history: searchResult.history || {},
-                        lab: searchResult.lab || '',
-                        encounters: searchResult.encounters || {},
-                        library: searchResult.library || {},
-                        token: craftAccessToken(searchResult.email, searchResult._id),
-                        cutscene: { pending: [], current: undefined },
-                        isAuthenticated: true
-                    };
+                    let loggedInUser = JSON.parse(JSON.stringify(searchResult));
+                    delete loggedInUser.salt;
+                    delete loggedInUser.hash;
+                    loggedInUser.isAuthenticated = true;
+                    loggedInUser.token = craftAccessToken(loggedInUser.email, loggedInUser._id);
                     res.json({message: `Login successful!`, user: loggedInUser, success: true});
                 } else {
                     console.log(`Incorrect password.`);

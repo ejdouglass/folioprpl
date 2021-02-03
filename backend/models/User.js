@@ -27,7 +27,7 @@ const UserSchema = new Schema({
     birthday: Date,
     lab: {
         type: Object,
-        default: undefined
+        default: {}
     },
     encounters: {
         type: Object,
@@ -35,7 +35,7 @@ const UserSchema = new Schema({
     },
     library: {
         type: Object,
-        default: undefined
+        default: {}
     },
     joined: Date,
     following: {
@@ -50,20 +50,35 @@ const UserSchema = new Schema({
         type: Array,
         default: []
     },
-    milestones: Object,
-    messages: Object,
-    programs: Array,
-    treasures: Array,
-    whatDo: Object,
+    milestones: {
+        type: Object,
+        default: {}
+    },
+    messages: {
+        type: Object,
+        default: {}
+    },
+    programs: {
+        type: Array,
+        default: []
+    },
+    treasures: {
+        type: Array,
+        default: []
+    },
+    whatDo: {
+        type: Object,
+        default: {}
+    },
     cutscene: {
         type: Object,
-        default: { pending: [], current: undefined }
+        default: { pending: [], current: {id: -1} }
     },
     privacy: {
         type: Number,
         default: 0
     }
-});
+}, { minimize: false });
 
 /*
     DATA MODELING++

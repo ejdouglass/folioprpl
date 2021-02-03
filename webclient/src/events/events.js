@@ -27,6 +27,9 @@
     
     The GOAL of these events is to inform the user about stuff, at minimum, and give interaction and gain useful user info as well (ideally, it's all entertaining)
     -- Build this out to accomplish these goals
+
+    OTHER PARTS
+    -- I think I'll have "pending events" open up a list of events with little icons/images/name, so variables for that at some point would be neato
 */
 
 export const events = {

@@ -17,7 +17,9 @@ const Reducer = (state, action) => {
             return initialState;
         case actions.ADD_ACTIVITY:
             // Receiving an object payload: {activity: {}, date: 'mmddyyyy'}
+            console.log(`I am parsing state history.`);
             let historyCopy = JSON.parse(JSON.stringify(state.history));
+            console.log(`I have parsed state history and am now trying to populate the date.`);
             if (!historyCopy[action.payload.date]) {
                 console.log(`This date has nothing in it yet! Lemme fix that real quick...`);
                 historyCopy[action.payload.date] = {
@@ -38,6 +40,8 @@ const Reducer = (state, action) => {
                 }
             */
             // Note that we're being passed events.introduction, so we're getting the contained OBJ
+
+            // We MAY have to adjust this to pull this cutscene out of 'pending,' if applicable
             return {...state, cutscene: {...state.cutscene, current: action.payload}};
         case actions.UNMOUNT_CUTSCENE:
             // Makes sense to have the cutscene in question with its current progress if applicable, as well as if we "finished" or moving into pending
@@ -49,7 +53,7 @@ const Reducer = (state, action) => {
                 newPending = newPending.filter(pendingItem => pendingItem.id !== state.cutscene.current.id);
             }
             newPending.push(JSON.parse(JSON.stringify(state.cutscene.current)));
-            return {...state, cutscene: {...state.cutscene, current: undefined, pending: newPending }};
+            return {...state, cutscene: {...state.cutscene, current: {id: -1}, pending: newPending }};
         default:
             console.log(`Dispatch called the Reducer, but for whatever reason, we're executing the default. Returning state.`);
             return state;
@@ -95,7 +99,7 @@ const initialState = {
     isAuthenticated: false,
     isAdmin: false,
     whatDo: { where: '/', what: {} },
-    cutscene: { pending: [], current: undefined }
+    cutscene: { pending: [], current: {id: -1} }
 }
 
 export const Context = createContext(initialState);

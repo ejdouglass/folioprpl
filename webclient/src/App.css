@@ -47,7 +47,7 @@
 }
 
 .boingy {
-  animation: jiggly 0.7s linear 1s infinite;
+  animation: jiggly 4.5s linear 1s infinite;
 }
 
 /* Apparently there's no "pause between iterations," so the best way to do it for now is just have the MAIN animation happen during
@@ -57,11 +57,14 @@
   0% {
     transform: translateY(0%);
   }
-  40% {
+  5% {
     transform: translateY(-20%);
   }
-  80% {
+  10% {
     transform: translateY(5%);
+  }
+  15% {
+    transform: translateY(0%);
   }
   100% {
     transform: translateY(0%);
