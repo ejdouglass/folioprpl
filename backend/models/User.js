@@ -25,16 +25,31 @@ const UserSchema = new Schema({
         default: {}
     },
     birthday: Date,
-    lab: String,
+    lab: {
+        type: Object,
+        default: undefined
+    },
     encounters: {
         type: Object,
         default: { tabula_rasa: 0 }
     },
-    library: Object,
+    library: {
+        type: Object,
+        default: undefined
+    },
     joined: Date,
-    following: Array,
-    friends: Array,
-    groups: Array,
+    following: {
+        type: Array,
+        default: []
+    },
+    friends: {
+        type: Array,
+        default: []
+    },
+    groups: {
+        type: Array,
+        default: []
+    },
     milestones: Object,
     messages: Object,
     programs: Array,
@@ -42,7 +57,7 @@ const UserSchema = new Schema({
     whatDo: Object,
     cutscene: {
         type: Object,
-        default: { pending: [], current: {} }
+        default: { pending: [], current: undefined }
     },
     privacy: {
         type: Number,

@@ -31,11 +31,13 @@
 
 export const events = {
     introduction: {
+        id: 0,
         content: [
             {type: 'say', content: 'Welcome! Your adventure is about to begin!'},
             {type: 'ask', content: 'Are you ready?', prompt: ['Yes', 'No']}
         ],
         flags: {},
-        icon: undefined
+        icon: undefined,
+        currentIndex: 0
     }
 }

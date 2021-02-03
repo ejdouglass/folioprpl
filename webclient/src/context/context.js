@@ -41,8 +41,15 @@ const Reducer = (state, action) => {
             return {...state, cutscene: {...state.cutscene, current: action.payload}};
         case actions.UNMOUNT_CUTSCENE:
             // Makes sense to have the cutscene in question with its current progress if applicable, as well as if we "finished" or moving into pending
-            // Consider 
-            return state;
+            // Consider where "completed" cutscenes go. Certainly incomplete cutscenes can be dumped into PENDING.
+
+            // FIX: This SHOULD avoid duplicates. Best way is to not have it in the code, though.
+            let newPending = JSON.parse(JSON.stringify(state.cutscene.pending)) || [];
+            if (newPending.length) {
+                newPending = newPending.filter(pendingItem => pendingItem.id !== state.cutscene.current.id);
+            }
+            newPending.push(JSON.parse(JSON.stringify(state.cutscene.current)));
+            return {...state, cutscene: {...state.cutscene, current: undefined, pending: newPending }};
         default:
             console.log(`Dispatch called the Reducer, but for whatever reason, we're executing the default. Returning state.`);
             return state;
@@ -88,7 +95,7 @@ const initialState = {
     isAuthenticated: false,
     isAdmin: false,
     whatDo: { where: '/', what: {} },
-    cutscene: { pending: [], current: {} }
+    cutscene: { pending: [], current: undefined }
 }
 
 export const Context = createContext(initialState);

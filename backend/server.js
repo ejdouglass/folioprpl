@@ -110,6 +110,7 @@ app.post('/user/login', (req, res, next) => {
                         encounters: searchResult.encounters || {},
                         library: searchResult.library || {},
                         token: craftAccessToken(searchResult.email, searchResult._id),
+                        cutscene: { pending: [], current: undefined },
                         isAuthenticated: true
                     };
                     res.json({message: `Login successful!`, user: loggedInUser, success: true});

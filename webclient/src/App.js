@@ -36,16 +36,23 @@ const App = () => {
 const Cutscene = () => {
   const [state, dispatch] = useContext(Context);
 
+  function pauseCutscene() {
+    dispatch({type: actions.UNMOUNT_CUTSCENE});
+  }
+
   // Probably add keyboard listeners to the window ONLY when cutscene is active? Can add keyboard interactivity that way, not just mouse.
 
   // Could consider refactoring this to have conditional rendering in the RETURN statement that checks for state?.cutscene?.current instead
 
-  // HERE: Probably a handy useEffect that goes through and loads all the necessary details from the current cutscene event
+  // HERE: Probably a handy useEffect that goes through and loads all the necessary details from the current cutscene event to make it GO-able
+
+  // ERROR: Having even an empty array in state.cutscene.current seems to make it pop up like this. So, uh. Fix that!
 
   return (
+    // <div></div>
     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', position: 'fixed', zIndex: '99', visibility: state?.cutscene?.current ? 'visible' : 'hidden', width: '100vw', height: '100vh', opacity: '0.9', backgroundColor: 'white'}}>
       <h1>I am a CUTSCENE!</h1>
-      <button style={{padding: '1rem', marginTop: '1rem'}}>Cool, Go Away</button>
+      <button style={{padding: '1rem', marginTop: '1rem'}} onClick={pauseCutscene}>Cool, Go Away</button>
     </div>
   )
 }
@@ -73,15 +80,15 @@ const Header = () => {
     // NOTE: It may make a lot more sense just to pop this code into the index.js file instead. The framework for this method is commented out over there.
   }, [dispatch, history]);
 
-  useEffect(() => {
-    if (state?.cutscene?.current) {
-      // A current cutscene has been mounted; play it out somehow
-      // OR! What if we have a 'hidden' component, high z-index and fixed positioned
-    }
-  }, [state.cutscene])
-
   return (
     <div className='flex-centered flex-col' id='app-header'>
+
+      {state.cutscene.pending.length > 0 &&
+      <div className='boingy' style={{position: 'fixed', display: 'flex', justifyContent: 'center', alignItems: 'center', bottom: '20px', right: '20px', width: '100px', height: '100px', borderRadius: '5px', backgroundColor: '#0AF'}}>
+        You have cutscene.
+      </div>
+      }
+
       <div>
         <h1>Project : Playground</h1>
       </div>

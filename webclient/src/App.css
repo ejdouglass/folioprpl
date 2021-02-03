@@ -45,3 +45,25 @@
   transform: translateY(2px);
   font-weight: 700;
 }
+
+.boingy {
+  animation: jiggly 0.7s linear 1s infinite;
+}
+
+/* Apparently there's no "pause between iterations," so the best way to do it for now is just have the MAIN animation happen during
+  the first whatever X%, and have the rest of the % be dead space, nothing happening. Try it out!
+*/
+@keyframes jiggly {
+  0% {
+    transform: translateY(0%);
+  }
+  40% {
+    transform: translateY(-20%);
+  }
+  80% {
+    transform: translateY(5%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
