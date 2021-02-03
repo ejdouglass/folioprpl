@@ -12,9 +12,7 @@
     -- Maybe a sneaky EVENT COMPONENT that can track everything and pass it along to local/global state? 
     -- That way it can consume ...args and such and I can just create a 'package' out of the event so it'll parse and run
     -- Cool idea, kind of daunting implementation
-
-    This could get DEVILISHLY complicated if I'm not careful.
-
+    
     Anyway, we've got a Cutscene component now that can handle all of this good stuff, so we can build in some functions and such for that fella.
     -- Gotta keep track of a lot, potentially, including user feedback/responses.
     -- Maybe a TYPE can be "animationStack" with the relevant info to do all animations in order? That could work.
@@ -32,14 +30,34 @@
     -- I think I'll have "pending events" open up a list of events with little icons/images/name, so variables for that at some point would be neato
 */
 
+// Would it be possible to have CONTENT include styles and durations 
 export const events = {
     introduction: {
+        title: 'Welcome to Project: Playground',
         id: 0,
-        content: [
+        content: {
+            loading: [],
+            initial: [
+                {type: 'text', text: 'Welcome! Nice to meet you. Your adventure shall begin shortly!', next: 'advance'},
+                {type: 'prompt', text: 'Are you ready?', prompt: [{text: 'Yes', linkto: 'okaysure'}, {text: 'No', linkto: 'letmego'}], next: 'contingent'}
+            ],
+            okaysure: [
+                {type: 'text', text: 'Hooray! Let us adventure!', next: 'end_scene'}
+            ],
+            letmego: [
+                {type: 'text', text: `Oh, too bad.. well, I'll be around.`, next: 'end_scene'}
+            ]
+        },
+        contentOld: [
             {type: 'say', content: 'Welcome! Your adventure is about to begin!'},
             {type: 'ask', content: 'Are you ready?', prompt: ['Yes', 'No']}
         ],
         flags: {},
+        actors: [{
+            who: 'tabula_rasa_0',
+            name: 'Tabula Rasa Blob',
+            imgsrc: undefined
+        }],
         icon: undefined,
         currentIndex: 0
     }

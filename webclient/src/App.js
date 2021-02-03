@@ -36,28 +36,93 @@ const App = () => {
 const Cutscene = () => {
   const [state, dispatch] = useContext(Context);
   const [isActive, setIsActive] = useState(false);
+  const [cutscene, setCutscene] = useState({title: ''});
+  const [activeSection, setActiveSection] = useState('initial');
+  const [activeIndex, setActiveIndex] = useState(0);
 
+  // HERE: A "start up cutscene" function, which will first check to see if relevant variables are set for a 'paused' scene
+  //  i.e. Having a saved activeSection, activeIndex, saved answers if relevant ... OR maybe we just start it fresh each time, for safety
+
+
+  // NOTE: The below two functions are SUPER nearly identical, so maybe just add a param that sets 'progress' with option for 'finished'
   function pauseCutscene() {
+    // Add a payload for setting this cutscene to 'paused', likely including all its current variables
     dispatch({type: actions.UNMOUNT_CUTSCENE});
+    setIsActive(false);
+    setCutscene({title: ''});
+    setActiveSection('initial');
+    setActiveIndex(0);
+  }
+
+  function finishCutscene() {
+    // Add a payload for setting 
+    dispatch({type: actions.UNMOUNT_CUTSCENE});
+    setIsActive(false);
+    setCutscene({title: ''});
+    setActiveSection('initial');
+    setActiveIndex(0);
+  }
+
+  function handlePromptChoice(linktarget) {
+    setActiveIndex(0);
+    setActiveSection(linktarget);
   }
 
   // Probably add keyboard listeners to the window ONLY when cutscene is active? Can add keyboard interactivity that way, not just mouse.
+  // For now, though, it's far easier to just have mouse-only/click-only features, at least until I'm far more comfortable with React key stuff.
 
-  // Could consider refactoring this to have conditional rendering in the RETURN statement that checks for state?.cutscene?.current instead
+  // This Cutscene needs unfettered access to all assets for the cutscene, such as for imgsrc and 
 
-  // HERE: Probably a handy useEffect that goes through and loads all the necessary details from the current cutscene event to make it GO-able
+  // HERE: Consider adding a SAVE ability to record a cutscene being finished
 
   useEffect(() => {
     if (state.cutscene?.current?.id > -1) {
       setIsActive(true);
+      // LOAD cutscene up, brah!
+      setCutscene({...state.cutscene.current});
+      // I think it's potentially reasonable to put this all in a function whose job is to 'start' the cutscene, beginning with LOADING,
+      //    and that way I can add anchors for, say, an interval that processes all animations until we hit a text-y section
+      //  ... this would be good not just for loading, but having this always being able to tell when animations/transitions should happen
+      //  ... note that we can use STYLES and ANIMATIONS in CSS on our character-holding div (styled Character?) to accomplish most/all of it
     } else setIsActive(false);
   }, [state.cutscene?.current]);
 
+  useEffect(() => {
+    if (cutscene.title.length) {
+      // Have the first "thing" happen and await user input which will fire off the currently-nonexistent handler to decide what to do next
+    }
+  }, [cutscene]);
+
   return (
-    // <div></div>
-    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', position: 'fixed', zIndex: '99', visibility: isActive ? 'visible' : 'hidden', width: '100vw', height: '100vh', opacity: '0.9', backgroundColor: 'white'}}>
-      <h1>I am a CUTSCENE!</h1>
-      <button style={{padding: '1rem', marginTop: '1rem'}} onClick={pauseCutscene}>Cool, Go Away</button>
+    <div>
+      {isActive &&
+      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', position: 'fixed', zIndex: '99', visibility: isActive ? 'visible' : 'hidden', width: '100vw', height: '100vh', opacity: '0.96', backgroundColor: 'white'}}>
+        <h1>{cutscene.title}</h1>
+
+        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', height: '200px', width: '50vw', border: '1px solid black', borderRadius: '3px'}}>
+          {cutscene.content[activeSection][activeIndex].text}
+        </div>
+        {cutscene.content[activeSection][activeIndex].next === 'advance' &&
+          <div>
+            <button style={{padding: '1rem', marginTop: '1rem'}} onClick={() => setActiveIndex(activeIndex => activeIndex + 1)}>Next</button>
+          </div>
+        }
+        {cutscene.content[activeSection][activeIndex].next === 'end_scene' &&
+          <div>
+            <button style={{padding: '1rem', margin: '1rem'}} onClick={finishCutscene}>OK Bye!</button>
+          </div>
+        }
+        {cutscene.content[activeSection][activeIndex].type === 'prompt' &&
+          <div style={{display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+            {cutscene.content[activeSection][activeIndex].prompt.map((prompt, index) => (
+              <button style={{padding: '1rem', margin: '1rem'}} key={index} onClick={() => handlePromptChoice(prompt.linkto)}>{prompt.text}</button>
+            ))}
+          </div>
+        }
+
+        <button style={{padding: '1rem', marginTop: '1rem'}} onClick={pauseCutscene}>Cool, Go Away</button>
+      </div>
+      }
     </div>
   )
 }

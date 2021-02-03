@@ -49,6 +49,10 @@ const LogoBlock = styled.div`
     margin-top: 1rem;
     margin-bottom: 1rem;
     background-color: green;
+    transition: background-color 2s;
+    :hover {
+        background-color: #0A4;
+    }
 `;
 
 const Error = styled.div`
