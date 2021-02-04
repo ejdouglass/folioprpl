@@ -63,6 +63,14 @@ const Reducer = (state, action) => {
             // Anyway, I think an array of... objects?... is the way to go, and just iterate through the array and plop the results into a state-copy.
             // Then return the state-copy as the new state. It's iffy, but let's try it, see how it flies.
             
+            // OK! We're doing the format of an ARRAY of OBJECTS: [ { stateVar: 'varname', value: 'someVal' } ]
+            // Copy state, amend state, return copied state
+            let modState = JSON.parse(JSON.stringify(state));
+            action.payload.forEach(update => {
+                modState[update.stateVar] = update.value;
+            });
+
+            console.log(`Chaotic Update called! Currently not touching REAL state, but modState proposal is: ${JSON.stringify(modState)}.`);
             return state;
         default:
             console.log(`Dispatch called the Reducer, but for whatever reason, we're executing the default. Returning state.`);

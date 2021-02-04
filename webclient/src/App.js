@@ -39,8 +39,11 @@ const Cutscene = () => {
   const [cutscene, setCutscene] = useState({title: ''});
   const [activeSection, setActiveSection] = useState('initial');
   const [activeIndex, setActiveIndex] = useState(0);
-  const [input1, setInput1] = useState({stateVar: '', value: ''});
-  const [input2, setInput2] = useState({stateVar: '', value: ''});
+  // HM, it's fine for now, but later concepts may require us to ask more questions further in the cutscene
+  //  currently that'd cause collision issues, but consider a separate state for "all session answered questions" that can be the final push to Reducer, maybe
+  //  of course, that would mean clearing out userResponses upon prompt click, but only in THAT scenario, currently we need them to persist for cutscene life
+  const [userResponses, setUserResponses] = useState([]);
+
 
   // HERE: A "start up cutscene" function, which will first check to see if relevant variables are set for a 'paused' scene
   //  i.e. Having a saved activeSection, activeIndex, saved answers if relevant ... OR maybe we just start it fresh each time, for safety
@@ -56,7 +59,19 @@ const Cutscene = () => {
     setActiveIndex(0);
   }
 
+  
   function handlePromptClick(linktarget) {
+
+    // Currently doesn't do anything, but a handy anchor for later for two things:
+    // 1) Having multi-user-input scenarios within a cutscene, pushing to a completedData array and clearing main userResponses state before moving on
+    // 2) User input checking (will need more variables/checkables in play for that to work)
+    switch (cutscene.content[activeSection][activeIndex].type) {
+      case 'textinput':
+        break;
+      default:
+        break;
+    }
+
     // IN HERE: Maybe in some cases, we'll be passed something to 'remember' about the user's response or choice. Be prepared to handle that later.
     switch (cutscene.content[activeSection][activeIndex].next) {
       case 'advance':
@@ -68,6 +83,7 @@ const Cutscene = () => {
         break;
       case 'end_scene':
         // Add a payload for setting this scene as DONE and applying any user choices to... whatever the user chose
+        dispatch({type: actions.CHAOTIC_UPDATE, payload: userResponses});
         dispatch({type: actions.UNMOUNT_CUTSCENE});
         setIsActive(false);
         setCutscene({title: ''});
@@ -79,16 +95,10 @@ const Cutscene = () => {
     }
   }
 
-  function handleDynamicInput(enteredVal, targetVal) {
-    switch (targetVal) {
-      case 'input1':
-        console.log(`Modifying first dynamic input field`);
-        return;
-      case 'input2':
-        console.log(`Modifying second dynamic input field`);
-      default:
-        return;
-    }
+  function handleDynamicInput(enteredVal, stateVar, targetIndex) {
+    let userInputCopy = JSON.parse(JSON.stringify(userResponses));
+    userInputCopy[targetIndex] = {stateVar: stateVar, value: enteredVal};
+    setUserResponses(userInputCopy);
   }
 
   // Probably add keyboard listeners to the window ONLY when cutscene is active? Can add keyboard interactivity that way, not just mouse.
@@ -132,7 +142,7 @@ const Cutscene = () => {
         <div>
           <div style={{display: 'flex', width: '80%', flexDirection: 'row'}}>
             {cutscene.content[activeSection][activeIndex].input.map((input, index) => (
-              <input type='text' placeholder={input.placeholder} onChange={e => handleDynamicInput(e.target.value, input.value)} style={{flex: '1', padding: '1rem', margin: '1rem'}} key={index}></input>
+              <input type='text' placeholder={input.placeholder} onChange={e => handleDynamicInput(e.target.value, input.stateVar, index)} style={{flex: '1', padding: '1rem', margin: '1rem'}} key={index}></input>
             ))}
           </div>
           {/* Ideally we add a 'check' here to not let the user click without everything entered... though the list of 'things to enter' could be variable */}
