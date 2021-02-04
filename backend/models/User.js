@@ -77,6 +77,10 @@ const UserSchema = new Schema({
     privacy: {
         type: Number,
         default: 0
+    },
+    activities: {
+        type: Array,
+        default: []
     }
 }, { minimize: false });
 

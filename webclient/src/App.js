@@ -24,6 +24,7 @@ const App = () => {
             <PrivateRoute exact path='/user' component={UserPage} />
             <PrivateRoute exact path='/home' component={Home} />
             <PrivateRoute exact path='/body' component={Body} />
+            <PrivateRoute exact path='/create_activity' component={CreateActivity} />
             <PrivateRoute exact path='/people' component={People} />
           </div>
         </div>
@@ -223,6 +224,7 @@ const Header = () => {
         {state.token &&
         <>
           <button className='btn' onClick={() => history.push('/home')}>Home</button>
+          <button className='btn' onClick={() => history.push('/create_activity')}>Activity +!</button>
           <button className='btn' onClick={() => history.push('/body')}>Body</button>
           <button className='btn' onClick={() => history.push('/user')}>User</button>
           <button className='btn' onClick={logout}>Log Out</button>
@@ -297,7 +299,7 @@ const Home = () => {
   /*
     About the useEffect:
     -- This is ideally where the user will land when they log in each new day. (Maybe have a lastInteractDate so the Header can check as the user does stuff?)
-    -- 
+    -- ?
   */
   useEffect(() => {
     // Initial load effects
@@ -369,6 +371,44 @@ const People = () => {
   return (
     <div>
       <h1>Find People Here!</h1>
+    </div>
+  )
+}
+
+
+const CreateActivity = () => {
+  // Separate ViewActivity page, which can pass activities to this page to edit later. Let's go!
+  const [state, dispatch] = useContext(Context);
+  const [newActivity, setNewActivity] = useState({
+    type: '',
+    name: '',
+    id: undefined,
+    actions: []
+  })
+
+  /*
+    Ok! There was no 'activities' saved for the User model. Now there is, it's an array. So, arr-of-obj, let's go with that.
+
+    What defines an activity:
+    TYPE of activity (workout, stretching, meditation, etc.)
+    NAME of activity
+    ID for reference
+    ACTIONS involved and their relationship to each other (i.e. exercises in a workout)
+      -- these actions have to be linked somehow, so either they're done for time, done for reps, done/undone, etc.
+      -- for instance, a Workout can have a warm-up, exercises that segue into each other, and cooldown
+      -- craft "pieces" of an activity that can be inserted (multiple times if desired)
+
+    ... advanced, but maybe have a toggle to turn this immediately into a standalone program whilst saving?
+    ... may or may not put it thusly, but a "how often do you want to do this" automagically program-ifies it
+
+    Do be sure this stuff saves. :P Should be fine the 'normal' way, or reference the way Body does it above.
+
+  */
+
+  return (
+    <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column', margin: '1rem'}}>
+      <h1>It's time for ACTION!</h1>
+      <input type='text' placeholder={'Activity Name'} value={newActivity.name} onChange={e => setNewActivity({...newActivity, name: e.target.value})} style={{padding: '16px'}} ></input>
     </div>
   )
 }
