@@ -12,7 +12,7 @@
     -- Maybe a sneaky EVENT COMPONENT that can track everything and pass it along to local/global state? 
     -- That way it can consume ...args and such and I can just create a 'package' out of the event so it'll parse and run
     -- Cool idea, kind of daunting implementation
-    
+
     Anyway, we've got a Cutscene component now that can handle all of this good stuff, so we can build in some functions and such for that fella.
     -- Gotta keep track of a lot, potentially, including user feedback/responses.
     -- Maybe a TYPE can be "animationStack" with the relevant info to do all animations in order? That could work.
@@ -30,7 +30,8 @@
     -- I think I'll have "pending events" open up a list of events with little icons/images/name, so variables for that at some point would be neato
 */
 
-// Would it be possible to have CONTENT include styles and durations 
+// Would it be possible to have CONTENT include styles and durations?
+// Also, thinking of making all PROMPTs into arrays like the 'contingent' fella to streamline/standardize the cutscene code
 export const events = {
     introduction: {
         title: 'Welcome to Project: Playground',
@@ -38,14 +39,15 @@ export const events = {
         content: {
             loading: [],
             initial: [
-                {type: 'text', text: 'Welcome! Nice to meet you. Your adventure shall begin shortly!', next: 'advance'},
-                {type: 'prompt', text: 'Are you ready?', prompt: [{text: 'Yes', linkto: 'okaysure'}, {text: 'No', linkto: 'letmego'}], next: 'contingent'}
+                {type: 'text', text: `Welcome! Nice to meet you. Your adventure is about to begin!`, prompt: 'Sounds good!', next: 'advance'},
+                {type: 'textinput', text: `Ah! I should introduce myself. I am Tabula Rasa (Blob). What's your name?`, input: [{placeholder: 'First name', stateVar: 'firstname', value: 'input1'}, {placeholder: 'Last name', stateVar: 'lastname', value: 'input2'}], prompt: `That's my name!`, next: 'advance'},
+                {type: 'prompt', text: `Nice to meet you! Are you ready?`, prompt: [{text: 'Yes', linkto: 'okaysure'}, {text: 'No', linkto: 'letmego'}], next: 'contingent'}
             ],
             okaysure: [
-                {type: 'text', text: 'Hooray! Let us adventure!', next: 'end_scene'}
+                {type: 'text', text: 'Hooray! Let us adventure!', prompt: `Yes, let's!`, next: 'end_scene'}
             ],
             letmego: [
-                {type: 'text', text: `Oh, too bad.. well, I'll be around.`, next: 'end_scene'}
+                {type: 'text', text: `Oh, too bad.. well, I'll be around.`, prompt: `Seeya.`, next: 'end_scene'}
             ]
         },
         contentOld: [
@@ -54,8 +56,8 @@ export const events = {
         ],
         flags: {},
         actors: [{
-            who: 'tabula_rasa_0',
-            name: 'Tabula Rasa Blob',
+            who: 'tabula_rasa_0', // Could also have DIV DIMENSIONS/<Character /> dimensions manually set in here
+            name: 'Tabula Rasa (Blob)',
             imgsrc: undefined
         }],
         icon: undefined,

@@ -5,7 +5,8 @@ export const actions = {
     LOGOUT: 'logout',
     ADD_ACTIVITY: 'add_activity',
     MOUNT_CUTSCENE: 'mount_cutscene',
-    UNMOUNT_CUTSCENE: 'unmount_cutscene'
+    UNMOUNT_CUTSCENE: 'unmount_cutscene',
+    CHAOTIC_UPDATE: 'chaotic_update'
 }
 
 const Reducer = (state, action) => {
@@ -54,6 +55,15 @@ const Reducer = (state, action) => {
             }
             newPending.push(JSON.parse(JSON.stringify(state.cutscene.current)));
             return {...state, cutscene: {...state.cutscene, current: {id: -1}, pending: newPending }};
+        case actions.CHAOTIC_UPDATE:
+            // This is a wild and dangerous concept! Taking ANY state variable decided from a cutscene and adjusting it.
+            // Our first 'trial run' is going to be us trying to get firstname and lastname from the user.
+            // Fortunately, these are both first-degree keys, so I don't have to try to 'drill down' to reach them.
+
+            // Anyway, I think an array of... objects?... is the way to go, and just iterate through the array and plop the results into a state-copy.
+            // Then return the state-copy as the new state. It's iffy, but let's try it, see how it flies.
+            
+            return state;
         default:
             console.log(`Dispatch called the Reducer, but for whatever reason, we're executing the default. Returning state.`);
             return state;
