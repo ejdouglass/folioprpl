@@ -380,19 +380,39 @@ const CreateActivity = () => {
   // Separate ViewActivity page, which can pass activities to this page to edit later. Let's go!
   const [state, dispatch] = useContext(Context);
   const [newActivity, setNewActivity] = useState({
-    type: '',
+    type: 'Workout',
     name: '',
     id: undefined,
-    actions: []
-  })
+    actions: [
+      {
+        name: 'Warm Up!',
+        parts: [{name: 'Jumping Jacks', duration: 30, next: 'timeout'}, {name: 'Hoppers', duration: -1, next: 'boop'}],
+        repeat: 0,
+        proceedType: 'loop'
+      },
+      {
+        name: 'Work It, Girl',
+        parts: [{name: 'Push-Ups', duration: -1, next: 'boop'}, {name: 'Rows', duration: -1, next: 'boop'}, {name: 'Goblet Squats', duration: -1, next: 'boop'}],
+        repeat: 0,
+        proceedType: 'sequential' // Just adding this for later -- the idea of doing each part through or supersetting?
+      },
+      {
+        name: 'Cool It~',
+        parts: [{name: 'Stretchies', duration: 600, next: 'timeout', auto: false}], // auto for if timer just starts going right away on this sxn or not
+        repeat: 0,
+        proceedType: 'sequential' // Just adding this for later -- the idea of doing each part through or supersetting?
+      }
+    ]
+  });
+  const [currentActionIndex, setCurrentActionIndex] = useState(0);
+  // Thinking about the PARTS above... think about the different ways exercises can go (timer, AMRAP, ALAP, etc.) and build for those possibilites
+  // Right now it's duration > 0 awaits timeout, duration -1 awaits user input
+  // A bit clumsy, but can be refined as I test it
 
   /*
     Ok! There was no 'activities' saved for the User model. Now there is, it's an array. So, arr-of-obj, let's go with that.
 
     What defines an activity:
-    TYPE of activity (workout, stretching, meditation, etc.)
-    NAME of activity
-    ID for reference
     ACTIONS involved and their relationship to each other (i.e. exercises in a workout)
       -- these actions have to be linked somehow, so either they're done for time, done for reps, done/undone, etc.
       -- for instance, a Workout can have a warm-up, exercises that segue into each other, and cooldown
@@ -403,12 +423,46 @@ const CreateActivity = () => {
 
     Do be sure this stuff saves. :P Should be fine the 'normal' way, or reference the way Body does it above.
 
+
+    BRAINSTORM!
+      Ok, so we got parts of a workout. Maybe "Cards" that go horizontally (row), with length of card indicating their content?
+      So first card will just be hanging out by default. A PLUS button on the right will add a new card. Each card will have a DELETE option on it.
+
+
   */
 
   return (
     <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column', margin: '1rem'}}>
       <h1>It's time for ACTION!</h1>
-      <input type='text' placeholder={'Activity Name'} value={newActivity.name} onChange={e => setNewActivity({...newActivity, name: e.target.value})} style={{padding: '16px'}} ></input>
+      <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', width: '400px', margin: '16px'}}>
+        <button style={{padding: '16px', fontSize: '18px', backgroundColor: '#FA0F34', width: '120px'}}>Workout!</button>
+      </div>
+      <input type='text' placeholder={newActivity.type + ' Name'} value={newActivity.name} onChange={e => setNewActivity({...newActivity, name: e.target.value})} style={{padding: '16px'}} ></input>
+
+      {/* Holder of nav buttons */}
+      <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', border: '1px solid #FEE', width: '90vw', height: '50px', marginTop: '16px'}}>
+        <button style={{padding: '12px', width: '150px'}}>Left</button>
+        <button style={{padding: '12px', width: '150px'}}>Right</button>
+      </div>
+
+      {/* Holder of Activity Cards */}
+      <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', border: '1px solid #EEE', width: '90vw', height: '50vh', marginTop: '16px'}}> 
+
+        
+
+        {/* Eventually a Component with sub-styled components, for now we're winging it */}
+        {newActivity.actions.map((action, index) => (
+          <div key={index} style={{width: '200px', height: ((100 + action.parts.length * 50) + 'px'), border: '1px solid black', borderRadius: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: index === 0 ? '0' : '16px'}}>
+            <h3 style={{backgroundColor: 'red', color: 'white', fontWeight: '700', width: '100%', height: '40px', textAlign: 'center', paddingTop: '8px', borderTopLeftRadius: '6px', borderTopRightRadius: '6px'}}>{action.name}</h3>
+            {action.parts.map((part, index) => (
+              <div key={index} style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', backgroundColor: 'orangered', height: '40px', textAlign: 'center', color: 'white', marginTop: '12px'}}>{part.name}</div>
+            ))}
+          </div>
+        ))}
+
+      
+
+      </div>
     </div>
   )
 }
