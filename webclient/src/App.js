@@ -387,19 +387,20 @@ const CreateActivity = () => {
       {
         name: 'Warm Up!',
         parts: [{name: 'Jumping Jacks', duration: 30, next: 'timeout'}, {name: 'Hoppers', duration: -1, next: 'boop'}],
-        repeat: 0,
-        proceedType: 'loop'
+        repeat: 1,
+        proceedType: 'loop',
+        colorScheme: 'none'
       },
       {
         name: 'Work It, Girl',
         parts: [{name: 'Push-Ups', duration: -1, next: 'boop'}, {name: 'Rows', duration: -1, next: 'boop'}, {name: 'Goblet Squats', duration: -1, next: 'boop'}],
-        repeat: 0,
+        repeat: 3,
         proceedType: 'sequential' // Just adding this for later -- the idea of doing each part through or supersetting?
       },
       {
         name: 'Cool It~',
         parts: [{name: 'Stretchies', duration: 600, next: 'timeout', auto: false}], // auto for if timer just starts going right away on this sxn or not
-        repeat: 0,
+        repeat: 1,
         proceedType: 'sequential' // Just adding this for later -- the idea of doing each part through or supersetting?
       }
     ]
@@ -424,6 +425,16 @@ const CreateActivity = () => {
     Do be sure this stuff saves. :P Should be fine the 'normal' way, or reference the way Body does it above.
 
 
+    ADD: 
+    -- "Import": a way to browse through pre-existing Activities, such as if you're putting together a workout and want a pre-exisitng warmup in there
+
+
+    FORMAT:
+    -- I'm now thinking (aside from thinking I should plan these way better ahead of time):
+      -> Stack of actions on the left side, with handy arrows... currently selected action pops to center stage with overview and editing buttons
+      -> Condense the top of the page to have type, name, etc. as unobtrusive as possible in a row, not columns
+
+
     BRAINSTORM!
       Ok, so we got parts of a workout. Maybe "Cards" that go horizontally (row), with length of card indicating their content?
       So first card will just be hanging out by default. A PLUS button on the right will add a new card. Each card will have a DELETE option on it.
@@ -433,11 +444,13 @@ const CreateActivity = () => {
 
   return (
     <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column', margin: '1rem'}}>
-      <h1>It's time for ACTION!</h1>
+
+
       <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', width: '400px', margin: '16px'}}>
         <button style={{padding: '16px', fontSize: '18px', backgroundColor: '#FA0F34', width: '120px'}}>Workout!</button>
+        <input type='text' placeholder={newActivity.type + ' Name'} value={newActivity.name} onChange={e => setNewActivity({...newActivity, name: e.target.value})} style={{padding: '16px'}} ></input>
       </div>
-      <input type='text' placeholder={newActivity.type + ' Name'} value={newActivity.name} onChange={e => setNewActivity({...newActivity, name: e.target.value})} style={{padding: '16px'}} ></input>
+      
 
       {/* Holder of nav buttons */}
       <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', border: '1px solid #FEE', width: '90vw', height: '50px', marginTop: '16px'}}>
@@ -445,20 +458,37 @@ const CreateActivity = () => {
         <button style={{padding: '12px', width: '150px'}}>Right</button>
       </div>
 
-      {/* Holder of Activity Cards */}
-      <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', border: '1px solid #EEE', width: '90vw', height: '50vh', marginTop: '16px'}}> 
+      {/* Holder of Activity Defining/showing bits & pieces */}
+      <div style={{display: 'flex', flex: '1', flexDirection: 'row', justifyContent: 'center', border: '1px solid #EEE', width: '90vw', height: '50vh', marginTop: '16px'}}> 
 
-        
+        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', border: '1px solid #EEF'}}>
+          {/* First column -- list of all our actions in this activity, descending column-wise */}
+          {newActivity.actions.map((action, index) => (
+            <div key={index} style={{display: 'flex', height: '50px', width: '200px', backgroundColor: '#0AF', marginBottom: '12px', justifyContent: 'center', alignItems: 'center'}} onClick={() => setCurrentActionIndex(index)} >{action.name}</div>
+          ))}
+        </div>
 
-        {/* Eventually a Component with sub-styled components, for now we're winging it */}
-        {newActivity.actions.map((action, index) => (
-          <div key={index} style={{width: '200px', height: ((100 + action.parts.length * 50) + 'px'), border: '1px solid black', borderRadius: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: index === 0 ? '0' : '16px'}}>
+        <div style={{display: 'flex', flexDirection: 'column', flex: '1'}}>
+          {/* Second column -- Holder for the overview of the card in question */}
+          <div style={{width: '200px', height: ((100 + newActivity.actions[currentActionIndex].parts.length * 50) + 'px'), border: '1px solid black', borderRadius: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between'}}>
+            {/* The preview Card itself */}
+            <h3 style={{backgroundColor: 'red', color: 'white', fontWeight: '700', width: '100%', height: '40px', textAlign: 'center', paddingTop: '8px', borderTopLeftRadius: '6px', borderTopRightRadius: '6px'}}>{newActivity.actions[currentActionIndex].name}</h3>
+            {newActivity.actions[currentActionIndex].parts.map((part, index) => (
+              <div key={index} style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', backgroundColor: 'orangered', height: '40px', textAlign: 'center', color: 'white'}}>{part.name}</div>
+            ))}
+            <h3 style={{backgroundColor: 'red', color: 'white', fontWeight: '700', width: '100%', height: '40px', textAlign: 'center', paddingTop: '8px', borderBottomLeftRadius: '6px', borderBottomRightRadius: '6px'}}>{newActivity.actions[currentActionIndex].repeat}x</h3>
+          </div>
+        </div>
+
+        {/* {newActivity.actions.map((action, index) => (
+          <div key={index} style={{width: '200px', height: ((100 + action.parts.length * 50) + 'px'), border: '1px solid black', borderRadius: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', marginLeft: index === 0 ? '0' : '16px'}}>
             <h3 style={{backgroundColor: 'red', color: 'white', fontWeight: '700', width: '100%', height: '40px', textAlign: 'center', paddingTop: '8px', borderTopLeftRadius: '6px', borderTopRightRadius: '6px'}}>{action.name}</h3>
             {action.parts.map((part, index) => (
-              <div key={index} style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', backgroundColor: 'orangered', height: '40px', textAlign: 'center', color: 'white', marginTop: '12px'}}>{part.name}</div>
+              <div key={index} style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', backgroundColor: 'orangered', height: '40px', textAlign: 'center', color: 'white'}}>{part.name}</div>
             ))}
+            <h3 style={{backgroundColor: 'red', color: 'white', fontWeight: '700', width: '100%', height: '40px', textAlign: 'center', paddingTop: '8px', borderBottomLeftRadius: '6px', borderBottomRightRadius: '6px'}}>{action.repeat}x</h3>
           </div>
-        ))}
+        ))} */}
 
       
 
