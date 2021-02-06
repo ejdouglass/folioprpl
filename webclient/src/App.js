@@ -406,6 +406,8 @@ const CreateActivity = () => {
     ]
   });
   const [currentActionIndex, setCurrentActionIndex] = useState(0);
+  const [currentActionStats, setCurrentActionStats] = useState({name: '', parts: [], repeat: 1, proceedType: 'unknown'});
+
   // Thinking about the PARTS above... think about the different ways exercises can go (timer, AMRAP, ALAP, etc.) and build for those possibilites
   // Right now it's duration > 0 awaits timeout, duration -1 awaits user input
   // A bit clumsy, but can be refined as I test it
@@ -442,6 +444,20 @@ const CreateActivity = () => {
 
   */
 
+  function addNewSet() {
+    const newSetName = `New Set ` + (newActivity.actions.length + 1);
+    setNewActivity({...newActivity, actions: [...newActivity.actions, {name: newSetName, parts: [{name: 'Doing Something', duration: -1, next: 'boop'}], repeat: 1}]})
+  }
+
+  function editCurrentAction(part, value) {
+    // let actionCopy = JSON.parse(JSON.stringify(newActivity.actions[currentActionIndex]));
+    // actionCopy[part] = value;
+    // setCurrentActionStats(actionCopy);
+    let activityCopy = JSON.parse(JSON.stringify(newActivity));
+    activityCopy.actions[currentActionIndex][part] = value;
+    setNewActivity(activityCopy);
+  }
+
   return (
     <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column', margin: '1rem'}}>
 
@@ -452,24 +468,24 @@ const CreateActivity = () => {
       </div>
       
 
-      {/* Holder of nav buttons */}
-      <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', border: '1px solid #FEE', width: '90vw', height: '50px', marginTop: '16px'}}>
-        <button style={{padding: '12px', width: '150px'}}>Left</button>
-        <button style={{padding: '12px', width: '150px'}}>Right</button>
-      </div>
-
       {/* Holder of Activity Defining/showing bits & pieces */}
       <div style={{display: 'flex', flex: '1', flexDirection: 'row', justifyContent: 'center', border: '1px solid #EEE', width: '90vw', height: '50vh', marginTop: '16px'}}> 
 
-        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', border: '1px solid #EEF'}}>
-          {/* First column -- list of all our actions in this activity, descending column-wise */}
+        {/* First column -- list of all our actions in this activity, descending column-wise */}
+        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', border: '1px solid #EEF', marginRight: '16px'}}>
+          
           {newActivity.actions.map((action, index) => (
-            <div key={index} style={{display: 'flex', height: '50px', width: '200px', backgroundColor: '#0AF', marginBottom: '12px', justifyContent: 'center', alignItems: 'center'}} onClick={() => setCurrentActionIndex(index)} >{action.name}</div>
+            <div key={index} style={{display: 'flex', height: '50px', width: '200px', backgroundColor: currentActionIndex === index ? '#6EF' : '#0AF', marginBottom: '12px', justifyContent: 'center', alignItems: 'center'}} onClick={() => setCurrentActionIndex(index)} >{action.name}</div>
           ))}
+
+        <button style={{display: 'flex', height: '50px', width: '200px', backgroundColor: '#0AF', marginBottom: '12px', justifyContent: 'center', alignItems: 'center'}} onClick={addNewSet} >Add Set/Section</button>
+
         </div>
 
+
+        {/* Second column -- Holder for the overview of the card in question */}
         <div style={{display: 'flex', flexDirection: 'column', flex: '1'}}>
-          {/* Second column -- Holder for the overview of the card in question */}
+          
           <div style={{width: '200px', height: ((100 + newActivity.actions[currentActionIndex].parts.length * 50) + 'px'), border: '1px solid black', borderRadius: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between'}}>
             {/* The preview Card itself */}
             <h3 style={{backgroundColor: 'red', color: 'white', fontWeight: '700', width: '100%', height: '40px', textAlign: 'center', paddingTop: '8px', borderTopLeftRadius: '6px', borderTopRightRadius: '6px'}}>{newActivity.actions[currentActionIndex].name}</h3>
@@ -478,6 +494,29 @@ const CreateActivity = () => {
             ))}
             <h3 style={{backgroundColor: 'red', color: 'white', fontWeight: '700', width: '100%', height: '40px', textAlign: 'center', paddingTop: '8px', borderBottomLeftRadius: '6px', borderBottomRightRadius: '6px'}}>{newActivity.actions[currentActionIndex].repeat}x</h3>
           </div>
+
+        </div>
+
+
+        {/* Third column - Widest, all the stuff to adjust and add bits to the concept here */}
+        <div style={{display: 'flex', flexDirection: 'column', flex: '3'}}>
+          {/* 
+            So, this section -- want to be able to:
+            1) select parts of a set to edit (boop and arrow)
+            2) edit the parts: name, type (maxREP, tarREP, maxTIM, tarTIM), rest time(s), times through, progression method(s) between exercises
+            3) edit the set: set name, set repeat #
+          */}
+
+          <div style={{display: 'flex', flexDirection: 'column', height: '50%', border: '1px solid #DDE'}}>
+            <h2>Edit Set Stats</h2>
+            <input type='text' value={newActivity.actions[currentActionIndex].name} onChange={e => editCurrentAction('name', e.target.value)} style={{fontSize: '16px', padding: '18px'}}></input>
+            <div style={{display: 'flex', flexDirection: 'row', width: '100%'}}>
+              <button style={{fontSize: '16px', padding: '18px'}} onClick={() => editCurrentAction('repeat', newActivity.actions[currentActionIndex].repeat > 1 ? newActivity.actions[currentActionIndex].repeat - 1 : 1)} >Less</button>
+              <div style={{fontSize: '16px', padding: '18px'}}>{'Repeat ' + newActivity.actions[currentActionIndex].repeat + 'x'}</div>
+              <button style={{fontSize: '16px', padding: '18px'}} onClick={() => editCurrentAction('repeat', newActivity.actions[currentActionIndex].repeat + 1)}>More</button>
+            </div>
+          </div>
+
         </div>
 
         {/* {newActivity.actions.map((action, index) => (
