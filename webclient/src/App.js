@@ -283,10 +283,10 @@ const UserPage = () => {
       <h3>This is where I'll tell you all about yourself! And maybe change your settings.</h3>
       <h3>Come to think of it, "Settings" and "User" might end up being separate concerns. That's fine!</h3>
       <h2>You can Change Password here:</h2>
-      <input type='password' placeholder={'Your old password'} value={oldPassword} onChange={e => setOldPassword(e.target.value)}></input>
-      <input type='password' placeholder={'Your new password'} value={newPassword} onChange={e => setNewPassword(e.target.value)}></input>
-      <input type='password' placeholder={'Confirm your new password'} value={confirmNewPassword} onChange={e => setConfirmNewPassword(e.target.value)}></input>
-      <button onClick={submitPWChangeRequest}>Change Password</button>
+      <input style={{padding: '18px', margin: '16px'}} type='password' placeholder={'Your old password'} value={oldPassword} onChange={e => setOldPassword(e.target.value)}></input>
+      <input style={{padding: '18px', margin: '16px'}} type='password' placeholder={'Your new password'} value={newPassword} onChange={e => setNewPassword(e.target.value)}></input>
+      <input style={{padding: '18px', margin: '16px'}} type='password' placeholder={'Confirm your new password'} value={confirmNewPassword} onChange={e => setConfirmNewPassword(e.target.value)}></input>
+      <button style={{padding: '18px', margin: '16px'}} onClick={submitPWChangeRequest}>Change Password</button>
     </div>
   )
 }
@@ -386,26 +386,27 @@ const CreateActivity = () => {
     actions: [
       {
         name: 'Warm Up!',
-        parts: [{name: 'Jumping Jacks', duration: 30, next: 'timeout'}, {name: 'Hoppers', duration: -1, next: 'boop'}],
+        parts: [{name: 'Jumping Jacks', type: 'time', target: 30, rest: 15, next: 'timeout'}, {name: 'Hoppers', type: 'reps', target: -1, rest: 15, next: 'boop'}],
         repeat: 1,
         proceedType: 'loop',
         colorScheme: 'none'
       },
       {
         name: 'Work It, Girl',
-        parts: [{name: 'Push-Ups', duration: -1, next: 'boop'}, {name: 'Rows', duration: -1, next: 'boop'}, {name: 'Goblet Squats', duration: -1, next: 'boop'}],
+        parts: [{name: 'Push-Ups', type: 'reps', target: -1, rest: 15, next: 'boop'}, {name: 'Rows', type: 'reps', target: -1, rest: 15, next: 'boop'}, {name: 'Goblet Squats', type: 'reps', target: -1, rest: 15, next: 'boop'}],
         repeat: 3,
         proceedType: 'sequential' // Just adding this for later -- the idea of doing each part through or supersetting?
       },
       {
         name: 'Cool It~',
-        parts: [{name: 'Stretchies', duration: 600, next: 'timeout', auto: false}], // auto for if timer just starts going right away on this sxn or not
+        parts: [{name: 'Stretchies', type: 'time', target: 600, rest: 15, next: 'timeout', auto: false}], // auto for if timer just starts going right away on this sxn or not
         repeat: 1,
         proceedType: 'sequential' // Just adding this for later -- the idea of doing each part through or supersetting?
       }
     ]
   });
   const [currentActionIndex, setCurrentActionIndex] = useState(0);
+  const [currentPartIndex, setCurrentPartIndex] = useState(0);
   const [currentActionStats, setCurrentActionStats] = useState({name: '', parts: [], repeat: 1, proceedType: 'unknown'});
 
   // Thinking about the PARTS above... think about the different ways exercises can go (timer, AMRAP, ALAP, etc.) and build for those possibilites
@@ -440,6 +441,10 @@ const CreateActivity = () => {
     BRAINSTORM!
       Ok, so we got parts of a workout. Maybe "Cards" that go horizontally (row), with length of card indicating their content?
       So first card will just be hanging out by default. A PLUS button on the right will add a new card. Each card will have a DELETE option on it.
+    
+      IDEAS FOR LATER:
+      -- Have the leftmost "sets" list give icon, color, name, maybe sets#, and height of each based on how long it is
+      -- This idea could also be applied to each set, with each part being thicker if it's longer, and add a 'rest' appendix to each
 
 
   */
@@ -450,12 +455,20 @@ const CreateActivity = () => {
   }
 
   function editCurrentAction(part, value) {
-    // let actionCopy = JSON.parse(JSON.stringify(newActivity.actions[currentActionIndex]));
-    // actionCopy[part] = value;
-    // setCurrentActionStats(actionCopy);
     let activityCopy = JSON.parse(JSON.stringify(newActivity));
     activityCopy.actions[currentActionIndex][part] = value;
     setNewActivity(activityCopy);
+  }
+
+  function editCurrentPart(subpart, value) {
+    let activityCopy = JSON.parse(JSON.stringify(newActivity));
+    activityCopy.actions[currentActionIndex].parts[currentPartIndex][subpart] = value;
+    setNewActivity(activityCopy);
+  }
+
+  function selectPartToEdit(indexOfPart) {
+    // This fxn may be unnecessary. We'll see with time! May just be able to get away with an inline setCurrentPartIndex.
+    setCurrentPartIndex(indexOfPart);
   }
 
   return (
@@ -490,7 +503,7 @@ const CreateActivity = () => {
             {/* The preview Card itself */}
             <h3 style={{backgroundColor: 'red', color: 'white', fontWeight: '700', width: '100%', height: '40px', textAlign: 'center', paddingTop: '8px', borderTopLeftRadius: '6px', borderTopRightRadius: '6px'}}>{newActivity.actions[currentActionIndex].name}</h3>
             {newActivity.actions[currentActionIndex].parts.map((part, index) => (
-              <div key={index} style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', backgroundColor: 'orangered', height: '40px', textAlign: 'center', color: 'white'}}>{part.name}</div>
+              <div key={index} style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', backgroundColor: 'orangered', height: '40px', textAlign: 'center', color: 'white'}} onClick={() => selectPartToEdit(index)}>{part.name}</div>
             ))}
             <h3 style={{backgroundColor: 'red', color: 'white', fontWeight: '700', width: '100%', height: '40px', textAlign: 'center', paddingTop: '8px', borderBottomLeftRadius: '6px', borderBottomRightRadius: '6px'}}>{newActivity.actions[currentActionIndex].repeat}x</h3>
           </div>
@@ -499,6 +512,7 @@ const CreateActivity = () => {
 
 
         {/* Third column - Widest, all the stuff to adjust and add bits to the concept here */}
+        {/* NOTE: This section is currently WILDLY too large for its needs. When resdesigning, give lots more room for everything to breathe. */}
         <div style={{display: 'flex', flexDirection: 'column', flex: '3'}}>
           {/* 
             So, this section -- want to be able to:
@@ -515,19 +529,18 @@ const CreateActivity = () => {
               <div style={{fontSize: '16px', padding: '18px'}}>{'Repeat ' + newActivity.actions[currentActionIndex].repeat + 'x'}</div>
               <button style={{fontSize: '16px', padding: '18px'}} onClick={() => editCurrentAction('repeat', newActivity.actions[currentActionIndex].repeat + 1)}>More</button>
             </div>
+            {/* ADD: Set intensity, set type */}
           </div>
 
+          <h2>Edit Exercise Details</h2>
+          <input type='text' placeholder={`Exercise name`} value={newActivity.actions[currentActionIndex].parts[currentPartIndex].name} style={{fontSize: '16px', padding: '18px'}} onChange={e => editCurrentPart('name', e.target.value)} ></input>
+          <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+            <h3>Done For:</h3>
+            <button style={{fontSize: '16px', padding: '18px', margin: '18px'}}>Time</button>
+            <button style={{fontSize: '16px', padding: '18px', margin: '18px'}}>Reps</button>
+          </div>
         </div>
 
-        {/* {newActivity.actions.map((action, index) => (
-          <div key={index} style={{width: '200px', height: ((100 + action.parts.length * 50) + 'px'), border: '1px solid black', borderRadius: '6px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', marginLeft: index === 0 ? '0' : '16px'}}>
-            <h3 style={{backgroundColor: 'red', color: 'white', fontWeight: '700', width: '100%', height: '40px', textAlign: 'center', paddingTop: '8px', borderTopLeftRadius: '6px', borderTopRightRadius: '6px'}}>{action.name}</h3>
-            {action.parts.map((part, index) => (
-              <div key={index} style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', backgroundColor: 'orangered', height: '40px', textAlign: 'center', color: 'white'}}>{part.name}</div>
-            ))}
-            <h3 style={{backgroundColor: 'red', color: 'white', fontWeight: '700', width: '100%', height: '40px', textAlign: 'center', paddingTop: '8px', borderBottomLeftRadius: '6px', borderBottomRightRadius: '6px'}}>{action.repeat}x</h3>
-          </div>
-        ))} */}
 
       
 
