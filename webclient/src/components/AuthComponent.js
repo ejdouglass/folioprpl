@@ -1,4 +1,15 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+
+const hereNow = keyframes`
+    from {
+        opacity: 0;
+        transform: translate(-25%, 5%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+`;
 
 const Card = styled.div`
     display: flex;
@@ -44,6 +55,7 @@ const Button = styled.button`
 `;
 
 const LogoBlock = styled.div`
+    animation: ${hereNow} 0.6s ease-in both;
     height: 25vmin;
     width: 25vmin;
     margin-top: 1rem;
