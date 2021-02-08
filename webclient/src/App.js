@@ -1,8 +1,9 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Route, useHistory } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
 import Cutscene from './pages/Cutscene';
 import Header from './pages/Header';
+import Body from './pages/Body';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import UserSettings from './pages/UserSettings';
@@ -10,9 +11,7 @@ import Home from './pages/Home';
 import Register from './pages/Register';
 import CreateActivity from './pages/CreateActivity';
 import './App.css';
-import { save, dateToString, updateDB } from './functions/globalfxns';
-import { Store, Context, actions } from './context/context';
-import { Button } from './components/AuthComponent'
+import { Store } from './context/context';
 
 const App = () => {
   return (
@@ -38,58 +37,6 @@ const App = () => {
 }
 
 
-
-
-
-
-
-
-const Body = () => {
-  const [state, dispatch] = useContext(Context);
-  const [activityName, setActivityName] = useState('');
-  const [activityAmt, setActivityAmt] = useState(0);
-  const [activityType, setActivityType] = useState('');
-  const mounted = useRef(false);
-
-  function addActivity() {
-    if (activityName && activityAmt > 0 && activityType) {
-      const newActivity = {name: activityName, amount: activityAmt, type: activityType};
-      const today = dateToString();
-      dispatch({type: actions.ADD_ACTIVITY, payload: {activity: newActivity, date: today}});
-      setActivityName('');
-      setActivityAmt(0);
-      setActivityType('');
-    }
-  }
-
-  useEffect(() => {
-    // Good enough for now to avoid an extra DB push on component mounting
-    if (!mounted.current) {
-      mounted.current = true;
-    } else {
-      console.log(`I feel the need to update the backend with new STUFF!`);
-      save(state);
-      updateDB(state);
-    }
-    
-  }, [state]);
-
-  return (
-    <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '1rem'}}>
-      <h1>Add an Activity</h1>
-      <div style={{marginTop: '1rem', display: 'flex', flexDirection: 'column', height: '300px', width: '300px', border: '1px solid #444', alignItems: 'center', padding: '1rem 0'}}>
-        <input type='text' style={{padding: '1rem', fontSize: '0.8rem', width: '200px'}} placeholder={'activity name'} value={activityName} onChange={e => setActivityName(e.target.value)}></input>
-        <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '60%'}}>
-          <input type='number' placeholder={'amt'} style={{marginTop: '1rem', padding: '1rem', width: '80px'}} value={activityAmt} onChange={e => setActivityAmt(e.target.value)} ></input>
-          <input type='text' placeholder={'type'} style={{marginTop: '1rem', padding: '1rem', width: '80px'}} value={activityType} onChange={e => setActivityType(e.target.value)} ></input>
-        </div>
-        <Button onClick={addActivity} style={{marginTop: '1rem'}}>Add Activity</Button>
-      </div>
-    </div>
-  )
-}
-
-
 const People = () => {
   return (
     <div>
@@ -99,3 +46,10 @@ const People = () => {
 }
 
 export default App;
+
+/*
+  NEW RULE: Let's just throw new pages and such into their own proper place up-front, save a lotta refactoring rejiggeirng later.
+
+  And for now, we'll leave some general App Notes here for perusal/reference. 
+
+*/
