@@ -62,5 +62,29 @@ export const events = {
         }],
         icon: undefined,
         currentIndex: 0
+    },
+
+    tutorial_level: {
+        title: `A Fresh Face`,
+        id: 1,
+        content: {},
+        flags: {},
+        actors: {},
+        icon: undefined,
+        currentIndex: 0
     }
 }
+
+/*
+    More spitballing...
+
+    So, CONTENT is an object containing "keys" for each section the user might find themselves in, essentially anchor points for cutscene options.
+    -- Each 'anchor point' is a sequential array, so each part of the scene plays out linearly until a decision point
+    -- Maybe replace TYPE with more options such as "animate" or a method such as "highlight()" to jiggle/foreground a speaking entity.
+        -> Having preset positions such as "Speaker1" and "Speaker2" would make sense (put them on left/side of speech box by default)
+    -- Add WHO to relevant areas so each text section has the speaker do a thing (OR have WHO be an object of actions/states/emotions to load for all charas
+            during a given point in cutscene)
+    -- Replace actors array with object? Maybe. So they can be referred by name instead of index. Makes sense.
+
+    IDEA FOR LATER: Non-instantaneous text
+*/
